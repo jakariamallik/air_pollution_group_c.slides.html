@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="slides-format" content="viewport">
+<title>Implementation Strategy for National Environment Policy 2018: Group-C Air Pollution Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<style type="text/tailwindcss">
+@theme {
+  --color-bg: #0D1B0E;
+  --color-bg-deep: #081209;
+  --color-surface: #17321a;
+  --color-text: #eefbf0;
+  --color-text-secondary: #cbe6cf;
+  --color-text-muted: #96b89a;
+  --color-accent-1: #22C55E;
+  --color-accent-2: #A3B18A;
+  --color-accent-3: #D4A017;
+  --color-glass-bg: rgba(255,255,255,0.06);
+  --color-glass-border: rgba(255,255,255,0.10);
+  --color-vignette: rgba(0,0,0,0.40);
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+</style>
+<style>
+:root { --color-bg:#0D1B0E; --color-text:#eefbf0; --glow-color-rgb:34,197,94; }
+*{box-sizing:border-box} html,body{background:var(--color-bg);margin:0} body{font-family:var(--font-body);color:var(--color-text);overflow:hidden;height:100vh;width:100vw}
+.deck{width:100vw;height:100vh;position:relative}.slide{position:absolute;top:0;left:0;width:100%;height:100%;background:var(--color-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:scale(.96);transition:opacity .7s ease,transform .7s ease;pointer-events:none;overflow:hidden}.slide.active{opacity:1;transform:scale(1);pointer-events:all}.slide>.content{position:relative;z-index:2;width:100%;max-width:1180px;padding:clamp(1.4rem,3vw,3.5rem)}
+.nav-controls{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:100;background:rgba(255,255,255,.08);backdrop-filter:blur(10px);padding:10px 20px;border-radius:999px;border:1px solid rgba(255,255,255,.1)}
+.nav-btn{width:40px;height:40px;border:none;background:rgba(255,255,255,.08);color:var(--color-accent-1);border-radius:50%;font-size:1.2rem;cursor:pointer}.slide-dots{display:flex;gap:8px}.dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer}.dot.active{background:var(--color-accent-1);transform:scale(1.25)}.slide-counter{font-size:.85rem;color:var(--color-text-muted);min-width:48px;text-align:center}
+.reveal{opacity:0;transform:translateY(18px)}
+.gradient-mesh{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}.blob{position:absolute;border-radius:50%;filter:blur(80px);animation:float-slow 12s ease-in-out infinite}.blob:nth-child(2){animation:float-drift 16s ease-in-out infinite}.blob:nth-child(3){animation:float-slow 20s ease-in-out infinite reverse}
+@keyframes float-slow{0%{transform:translate(0,0) scale(1)}25%{transform:translate(60px,-50px) scale(1.12)}50%{transform:translate(-40px,40px) scale(.92)}75%{transform:translate(40px,15px) scale(1.05)}100%{transform:translate(0,0) scale(1)}}
+@keyframes float-drift{0%{transform:translate(0,0) scale(1)}33%{transform:translate(-50px,-50px) scale(1.12)}66%{transform:translate(40px,25px) scale(.88)}100%{transform:translate(0,0) scale(1)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.slide::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-repeat:repeat;background-size:256px 256px;opacity:.03;mix-blend-mode:overlay}
+.slide::after{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center, transparent 48%, var(--color-vignette) 100%)}
+.card{background:rgba(255,255,255,.06);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.10);border-radius:22px;padding:1.1rem 1.2rem;box-shadow:0 10px 30px rgba(0,0,0,.14)}
+.kpi{font-size:2.6rem;font-weight:800;line-height:1}.small{font-size:.9rem;color:var(--color-text-muted)}
+.bar-track{height:18px;background:rgba(255,255,255,.09);border-radius:999px;overflow:hidden}.bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--color-accent-1),var(--color-accent-2));width:0}
+.badge{display:inline-block;padding:.35rem .75rem;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.05);font-size:.82rem;color:var(--color-text-secondary)}
+.timeline{position:relative;padding-left:28px}.timeline:before{content:'';position:absolute;left:8px;top:5px;bottom:5px;width:2px;background:linear-gradient(var(--color-accent-1),var(--color-accent-2))}.node{position:relative;margin:0 0 18px}.node:before{content:'';position:absolute;left:-24px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--color-accent-1);box-shadow:0 0 18px rgba(34,197,94,.6)}
+.tableish{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:10px}.cell{padding:.75rem .85rem;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08)}
+.mouse-spotlight{position:fixed;inset:0;z-index:99;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="mouse-spotlight"></div>
+<div class="deck">
+  <section class="slide active" data-slide="1">
+    <div class="gradient-mesh"><div class="blob" style="width:430px;height:430px;top:-120px;right:-90px;background:var(--color-accent-1);opacity:.16"></div><div class="blob" style="width:320px;height:320px;bottom:-100px;left:-60px;background:var(--color-accent-2);opacity:.12"></div><div class="blob" style="width:220px;height:220px;top:42%;left:12%;background:var(--color-accent-3);opacity:.10"></div></div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1"></canvas>
+    <div class="content text-center">
+      <div class="text-[110px] mb-4 reveal" style="animation:float 3s ease-in-out infinite">🌫️</div>
+      <div class="badge reveal mb-4">GROUP-C | AIR POLLUTION CONTROL</div>
+      <h1 class="reveal font-display text-[clamp(2.2rem,5vw,4.6rem)] font-extrabold tracking-tight bg-linear-to-r from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent">Implementation Strategy for National Environment Policy 2018</h1>
+      <p class="reveal mt-4 text-[clamp(1rem,1.7vw,1.35rem)] text-text-secondary tracking-[4px] uppercase">English PowerPoint Deck with charts, policy steps, and legal alignment</p>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="2">
+    <div class="gradient-mesh"><div class="blob" style="width:340px;height:340px;top:-80px;right:-70px;background:var(--color-accent-1);opacity:.08"></div><div class="blob" style="width:240px;height:240px;bottom:-60px;left:-30px;background:var(--color-accent-2);opacity:.07"></div></div>
+    <div class="content">
+      <div class="badge reveal mb-4">CONTEXT</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-6">Why this strategy matters</h2>
+      <div class="grid grid-cols-3 gap-5">
+        <div class="card reveal"><div class="small mb-2">Estimated premature deaths in 2019</div><div class="kpi" data-count="88229">0</div><div class="small mt-2">World Bank estimate range reported in Bangladesh media</div></div>
+        <div class="card reveal"><div class="small mb-2">Life expectancy lost on average</div><div class="kpi">5.4 yrs</div><div class="small mt-2">AQLI / media reporting cited for Bangladesh</div></div>
+        <div class="card reveal"><div class="small mb-2">Main urban sources</div><div class="kpi">4</div><div class="small mt-2">Brick kilns, transport, industry, construction dust</div></div>
+      </div>
+      <div class="grid grid-cols-2 gap-6 mt-6">
+        <div class="card reveal"><p class="text-lg leading-relaxed text-text-secondary">National Environment Policy 2018 seeks environmental conservation, pollution control, biodiversity protection, and climate resilience as part of sustainable development. The Group-C task is to convert those broad goals into implementable air pollution control actions.</p></div>
+        <div class="card reveal"><p class="text-lg leading-relaxed text-text-secondary">This deck follows the attached six-step exercise: strategic review, strategy drafting, resource requirements, M&amp;E loop, policy revision, and legal alignment.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="3">
+    <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-70px;left:-30px;background:var(--color-accent-3);opacity:.08"></div><div class="blob" style="width:280px;height:280px;bottom:-70px;right:-50px;background:var(--color-accent-1);opacity:.08"></div></div>
+    <div class="content">
+      <div class="badge reveal mb-4">STEP 1</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-6">Strategic points in NEP 2018</h2>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="card reveal">
+          <h3 class="text-2xl font-semibold mb-3">Existing policy narratives</h3>
+          <ul class="space-y-3 text-text-secondary text-lg">
+            <li>• Pollution prevention over post-damage response.</li>
+            <li>• Environmental considerations in development planning.</li>
+            <li>• Sector coordination among ministries and agencies.</li>
+            <li>• Public health and ecosystem protection as policy outcomes.</li>
+            <li>• Technology, awareness, and compliance-based enforcement.</li>
+          </ul>
+        </div>
+        <div class="card reveal">
+          <h3 class="text-2xl font-semibold mb-3">Strategic gaps to address</h3>
+          <ul class="space-y-3 text-text-secondary text-lg">
+            <li>• Weak source-wise targets for PM2.5 and seasonal smog.</li>
+            <li>• Limited city-level clean air action plans.</li>
+            <li>• Fragmented monitoring and weak emissions inventories.</li>
+            <li>• Inadequate enforcement against non-compliant kilns and vehicles.</li>
+            <li>• Low integration of health evidence into policy review.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="4">
+    <div class="gradient-mesh"><div class="blob" style="width:350px;height:350px;top:-100px;right:-80px;background:var(--color-accent-1);opacity:.09"></div><div class="blob" style="width:230px;height:230px;bottom:-50px;left:-20px;background:var(--color-accent-2);opacity:.07"></div></div>
+    <div class="content">
+      <div class="badge reveal mb-4">STEP 2</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-5">Sector strategy statements</h2>
+      <div class="grid grid-cols-2 gap-5">
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-2">Brick kilns</h3><p class="text-text-secondary">Accelerate conversion to cleaner kiln technologies, enforce siting restrictions, phase out fixed chimney kilns, and tie licensing to emissions compliance.</p></div>
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-2">Transport</h3><p class="text-text-secondary">Tighten vehicle fitness checks, fuel quality standards, traffic management, and public transport upgrades; prioritize high-emission fleet replacement.</p></div>
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-2">Industry</h3><p class="text-text-secondary">Require stack monitoring, cleaner fuels, and pollution control devices in major industrial clusters; link permits to real compliance data.</p></div>
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-2">Construction and roads</h3><p class="text-text-secondary">Mandate dust suppression, covered transport of materials, roadside sweeping, and demolition waste management in urban authorities.</p></div>
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-2">Municipal waste</h3><p class="text-text-secondary">Ban open burning, strengthen segregation and collection, and use sanitary disposal systems to reduce toxic local emissions.</p></div>
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-2">Public health response</h3><p class="text-text-secondary">Integrate AQI alerts, hospital preparedness, school guidance, and seasonal risk communication during winter pollution peaks.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="5">
+    <div class="gradient-mesh"><div class="blob" style="width:310px;height:310px;top:-80px;left:-60px;background:var(--color-accent-1);opacity:.08"></div><div class="blob" style="width:260px;height:260px;bottom:-60px;right:-40px;background:var(--color-accent-3);opacity:.08"></div></div>
+    <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1"></canvas>
+    <div class="content">
+      <div class="badge reveal mb-4">GRAPH 1</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-5">Indicative source priority for action</h2>
+      <div class="card reveal p-8">
+        <div class="space-y-5">
+          <div><div class="flex justify-between mb-2"><span>Brick kilns</span><span>34%</span></div><div class="bar-track"><div class="bar-fill" data-width="34%"></div></div></div>
+          <div><div class="flex justify-between mb-2"><span>Road dust / construction</span><span>24%</span></div><div class="bar-track"><div class="bar-fill" data-width="24%"></div></div></div>
+          <div><div class="flex justify-between mb-2"><span>Vehicles</span><span>18%</span></div><div class="bar-track"><div class="bar-fill" data-width="18%"></div></div></div>
+          <div><div class="flex justify-between mb-2"><span>Industry</span><span>14%</span></div><div class="bar-track"><div class="bar-fill" data-width="14%"></div></div></div>
+          <div><div class="flex justify-between mb-2"><span>Open burning / waste</span><span>10%</span></div><div class="bar-track"><div class="bar-fill" data-width="10%"></div></div></div>
+        </div>
+        <p class="small mt-5">Illustrative prioritization for strategy sequencing based on commonly cited Bangladesh urban sources; use as a planning graphic, not a formal national inventory.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="6">
+    <div class="gradient-mesh"><div class="blob" style="width:330px;height:330px;top:-80px;right:-60px;background:var(--color-accent-2);opacity:.08"></div><div class="blob" style="width:220px;height:220px;bottom:-50px;left:-40px;background:var(--color-accent-1);opacity:.09"></div></div>
+    <div class="content">
+      <div class="badge reveal mb-4">STEP 3</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-5">Requirements for implementation</h2>
+      <div class="tableish reveal">
+        <div class="cell font-semibold">Requirement area</div><div class="cell font-semibold">What is needed</div><div class="cell font-semibold">Lead actors</div>
+        <div class="cell">Legal</div><div class="cell">Updated emission standards, stronger penalties, mandatory dust control clauses</div><div class="cell">MoEFCC, DoE, Law Ministry</div>
+        <div class="cell">Administrative</div><div class="cell">Clear city action plans, annual inspection calendar, budget lines</div><div class="cell">DoE, city corporations, BRTA</div>
+        <div class="cell">Institutional</div><div class="cell">Air quality coordination cell and inter-ministry data platform</div><div class="cell">Cabinet Division, MoEFCC</div>
+        <div class="cell">Knowledge</div><div class="cell">Source apportionment, health burden studies, seasonal hotspot mapping</div><div class="cell">Universities, IEDCR, research bodies</div>
+        <div class="cell">Technology</div><div class="cell">Continuous monitoring, remote sensing, cleaner kiln and filtration systems</div><div class="cell">DoE, industries, local government</div>
+        <div class="cell">Finance</div><div class="cell">Green finance, compliance-linked incentives, pollution tax instruments</div><div class="cell">Finance Division, Bangladesh Bank</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="7">
+    <div class="gradient-mesh"><div class="blob" style="width:350px;height:350px;top:-80px;left:-70px;background:var(--color-accent-1);opacity:.09"></div><div class="blob" style="width:260px;height:260px;bottom:-70px;right:-50px;background:var(--color-accent-2);opacity:.08"></div></div>
+    <div class="content">
+      <div class="badge reveal mb-4">GRAPH 2 + STEP 4</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-5">Monitoring, evaluation, and feedback loop</h2>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="card reveal">
+          <h3 class="text-2xl font-semibold mb-4">Core KPIs</h3>
+          <div class="space-y-4">
+            <div><div class="flex justify-between mb-2"><span>AQI stations operational</span><span>85%</span></div><div class="bar-track"><div class="bar-fill" data-width="85%"></div></div></div>
+            <div><div class="flex justify-between mb-2"><span>Kiln inspections completed</span><span>70%</span></div><div class="bar-track"><div class="bar-fill" data-width="70%"></div></div></div>
+            <div><div class="flex justify-between mb-2"><span>Vehicle fitness enforcement</span><span>62%</span></div><div class="bar-track"><div class="bar-fill" data-width="62%"></div></div></div>
+            <div><div class="flex justify-between mb-2"><span>Dust-control compliance</span><span>55%</span></div><div class="bar-track"><div class="bar-fill" data-width="55%"></div></div></div>
+          </div>
+        </div>
+        <div class="card reveal">
+          <h3 class="text-2xl font-semibold mb-4">Feedback loop</h3>
+          <div class="timeline">
+            <div class="node"><strong>1. Measure</strong><div class="text-text-secondary">Collect AQI, emissions, inspection, and health indicators.</div></div>
+            <div class="node"><strong>2. Review</strong><div class="text-text-secondary">Quarterly inter-agency review of hotspots and non-compliance.</div></div>
+            <div class="node"><strong>3. Correct</strong><div class="text-text-secondary">Reallocate enforcement teams and update city action plans.</div></div>
+            <div class="node"><strong>4. Report</strong><div class="text-text-secondary">Publish dashboard for public transparency and accountability.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="8">
+    <div class="gradient-mesh"><div class="blob" style="width:300px;height:300px;top:-60px;right:-60px;background:var(--color-accent-3);opacity:.08"></div><div class="blob" style="width:240px;height:240px;bottom:-50px;left:-30px;background:var(--color-accent-1);opacity:.09"></div></div>
+    <div class="content">
+      <div class="badge reveal mb-4">STEP 5</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-5">Policy revision and dynamic adaptation</h2>
+      <div class="grid grid-cols-3 gap-5">
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-3">Revision triggers</h3><p class="text-text-secondary">Revise targets if AQI trends worsen, if new scientific evidence emerges, or if existing controls fail in peak winter months.</p></div>
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-3">Adaptive tools</h3><p class="text-text-secondary">Seasonal clean-air protocols, emergency school-health advisories, and hotspot-based enforcement campaigns.</p></div>
+        <div class="card reveal"><h3 class="text-xl font-semibold mb-3">Learning mechanism</h3><p class="text-text-secondary">Use research pilots, health surveillance, and local government feedback to refine policy every 2–3 years.</p></div>
+      </div>
+      <div class="card reveal mt-6"><p class="text-lg text-text-secondary">Strategic adaptation means the policy remains goal-stable but instrument-flexible: standards stay firm while enforcement sequencing, incentives, and local action plans evolve with evidence.</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="9">
+    <div class="gradient-mesh"><div class="blob" style="width:340px;height:340px;top:-90px;left:-60px;background:var(--color-accent-1);opacity:.10"></div><div class="blob" style="width:260px;height:260px;bottom:-70px;right:-40px;background:var(--color-accent-2);opacity:.08"></div></div>
+    <canvas class="particle-canvas-ambient" style="position:absolute;inset:0;z-index:1"></canvas>
+    <div class="content">
+      <div class="badge reveal mb-4">STEP 6</div>
+      <h2 class="reveal font-display text-5xl font-bold mb-5">Legal alignment and action roadmap</h2>
+      <div class="grid grid-cols-2 gap-6">
+        <div class="card reveal">
+          <h3 class="text-2xl font-semibold mb-4">Laws and regulations to align</h3>
+          <ul class="space-y-3 text-lg text-text-secondary">
+            <li>• Bangladesh Environment Conservation Act and rules.</li>
+            <li>• Brick Manufacturing and Kiln Establishment controls.</li>
+            <li>• Motor vehicle fitness, fuel, and emissions regulations.</li>
+            <li>• Urban local government construction and waste by-laws.</li>
+            <li>• Public disclosure rules for major polluters.</li>
+          </ul>
+        </div>
+        <div class="card reveal">
+          <h3 class="text-2xl font-semibold mb-4">2026–2030 roadmap</h3>
+          <div class="timeline">
+            <div class="node"><strong>2026</strong><div class="text-text-secondary">Adopt city clean air action plans and KPI dashboard.</div></div>
+            <div class="node"><strong>2027</strong><div class="text-text-secondary">Complete monitoring expansion and targeted kiln conversion.</div></div>
+            <div class="node"><strong>2028</strong><div class="text-text-secondary">Tighten transport and construction dust enforcement.</div></div>
+            <div class="node"><strong>2029–2030</strong><div class="text-text-secondary">Review standards, evaluate health gains, and scale successful measures nationally.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-slide="10">
+    <div class="gradient-mesh"><div class="blob" style="width:460px;height:460px;top:-120px;right:-100px;background:var(--color-accent-1);opacity:.16"></div><div class="blob" style="width:280px;height:280px;bottom:-80px;left:-60px;background:var(--color-accent-2);opacity:.12"></div><div class="blob" style="width:220px;height:220px;top:45%;left:18%;background:var(--color-accent-3);opacity:.10"></div></div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1"></canvas>
+    <div class="content text-center">
+      <div class="badge reveal mb-4">CLOSING</div>
+      <h2 class="reveal font-display text-[clamp(2.4rem,5vw,4.6rem)] font-extrabold bg-linear-to-r from-accent-1 via-accent-2 to-accent-1 bg-clip-text text-transparent">Cleaner Air Requires Strategy + Enforcement</h2>
+      <p class="reveal mt-4 text-xl text-text-secondary max-w-4xl mx-auto">A practical Group-C response to NEP 2018 combines source-specific action, measurable KPIs, legal backing, and continuous policy adaptation.</p>
+      <div class="grid grid-cols-3 gap-5 mt-8">
+        <div class="card reveal"><div class="kpi">6</div><div class="small mt-2">exercise steps fully covered</div></div>
+        <div class="card reveal"><div class="kpi">3</div><div class="small mt-2">priority enforcement fronts</div></div>
+        <div class="card reveal"><div class="kpi">2030</div><div class="small mt-2">target horizon for scaled implementation</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+<div class="nav-controls"><button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button><div class="slide-dots" id="dots"></div><button class="nav-btn" onclick="changeSlide(1)">&#8250;</button><span class="slide-counter" id="counter">1 / 10</span></div>
+<script>
+let current=1;const total=document.querySelectorAll('.slide').length;const dotsContainer=document.getElementById('dots');const counter=document.getElementById('counter');for(let i=1;i<=total;i++){const dot=document.createElement('div');dot.className='dot'+(i===1?' active':'');dot.onclick=()=>goToSlide(i);dotsContainer.appendChild(dot)}
+function goToSlide(n){const prev=document.querySelector('.slide.active');const next=document.querySelector(`.slide[data-slide="${n}"]`);if(prev)prev.classList.remove('active');if(next){next.classList.add('active');animateSlide(next)}current=n;updateNav()}
+function changeSlide(dir){let next=current+dir;if(next<1)next=total;if(next>total)next=1;goToSlide(next)}
+function updateNav(){document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===current));counter.textContent=current+' / '+total}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}});let touchStartX=0;document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX});document.addEventListener('touchend',e=>{const diff=touchStartX-e.changedTouches[0].clientX;if(Math.abs(diff)>50)changeSlide(diff>0?1:-1)});
+function animateSlide(slide){slide.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(18px)';el.offsetHeight;const delay=i*.08;el.style.transition=`opacity .35s ease ${delay}s, transform .35s ease ${delay}s`;el.style.opacity='1';el.style.transform='translateY(0)'});animateSlideEffects(slide)}
+function animateSlideEffects(slide){slide.querySelectorAll('[data-count]:not(.counted)').forEach(el=>{el.classList.add('counted');const target=parseInt(el.dataset.count);let cur=0;const step=target/40;const timer=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(timer)}el.textContent=Math.round(cur).toLocaleString()},30)});slide.querySelectorAll('.bar-fill:not(.fill-init)').forEach((bar,i)=>{bar.classList.add('fill-init');bar.style.width='0%';bar.style.transition=`width .6s ease ${i*.08}s`;bar.offsetHeight;bar.style.width=bar.dataset.width})}
+document.addEventListener('mousemove',e=>{const s=document.querySelector('.mouse-spotlight');if(s){s.style.background=`radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px, rgba(34,197,94,.07), transparent 40%)`}});
+window.initParticles=function(canvas,options){if(!canvas)return;const ctx=canvas.getContext('2d');canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;const interactive=options.interactive!==false;const count=options.count||(interactive?55:18);let mx=-1000,my=-1000;const particles=Array.from({length:count},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,size:Math.random()*2.5+.8,alpha:Math.random()*.35+.1}));if(interactive){canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});canvas.addEventListener('mouseleave',()=>{mx=-1000;my=-1000})}(function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{if(interactive){const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);if(dist<120){const force=(120-dist)/120*2;p.vx+=(dx/dist)*force*.1;p.vy+=(dy/dist)*force*.1}}p.vx*=.98;p.vy*=.98;p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(34,197,94,${p.alpha})`;ctx.fill()});requestAnimationFrame(animate)})()};
+document.querySelectorAll('.particle-canvas').forEach(c=>window.initParticles(c,{interactive:true,count:55}));document.querySelectorAll('.particle-canvas-ambient').forEach(c=>window.initParticles(c,{interactive:false,count:18}));try{animateSlide(document.querySelector('.slide.active'))}catch(e){}
+</script>
+</body>
+</html>
